@@ -1,6 +1,6 @@
 {
   "name": "@atamaco/eslint-config-atama",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "ESLint for Atama Projects",
   "main": "index.js",
   "scripts": {
