@@ -1,0 +1,57 @@
+name: Create Github Package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  unit_test-lint:
+    name: 'Tests and Linting'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: install dependencies
+        run: npm install
+      - name: test
+        run: npm run test
+  bump-version:
+    name: 'Bump Version on main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout source code'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: 'cat package.json'
+        run: cat ./package.json
+      - name: 'Automated Version Bump'
+        id: version-bump
+        uses: 'phips28/gh-action-bump-version@master'
+        with:
+          tag-prefix: 'v'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'cat package.json'
+        run: cat ./package.json
+      - name: 'Output Step'
+        env:
+          NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
+        run: echo "new tag $NEW_TAG"
+      - uses: actions/checkout@v2
+        with:
+            ref: ${{ steps.version-bump.outputs.newTag }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - run: npm install
+      # https://github.com/JS-DevTools/npm-publish/commits/v1.4.3
+      - uses: JS-DevTools/npm-publish@0f451a94170d1699fd50710966d48fb26194d939
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          access: "public"
