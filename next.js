@@ -11,7 +11,8 @@ module.exports = {
     // Next.js needs default exports for pages and API endpoints
     {
       'files': [
-        'pages/**/*'
+        'pages/**/*',
+        'src/pages/**/*'
       ],
       'rules': {
         'import/no-default-export': 'off'
